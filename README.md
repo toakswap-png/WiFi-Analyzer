@@ -1,3 +1,6 @@
+***Dowmload apk file See "Release" Section***<br>
+
+
 📡 ***Wi-Fi Analyzer & Spectrum Monitor (Android)***<br>
 A modern, high-performance Android application built with Jetpack Compose and Kotlin to scan, <br>
 analyze, and optimize Wi-Fi networks in real-time across 2.4 GHz, 5 GHz, and 6 GHz bands.<br>
@@ -16,5 +19,5 @@ Accurate Wi-Fi Standard Detection: Identifies Wi-Fi generation standards ***(Wi-
 Network IP Configuration: Displays local device IP, calculated Subnet Mask, Gateway Router IP, DNS 1/DNS 2 servers, and MAC address.<br>
 Real-Time Signal History Chart: Live RSSI tracking over time to monitor signal stability.<br>
 Built-In Ping Latency Tool: Measures network round-trip time (RTT) to gateway or custom hosts.<br>
-⭐ 4. Channel Rating & Recommendation
+⭐ 4. Channel Rating & Recommendation<br>
 Channel Scoring Engine: Analyzes channel congestion and ranks the best channels for optimal router configuration.<br>
