@@ -6,6 +6,15 @@ Channel Width<br>
 RSSI<br>
 Security Type<br>
 BSSID<br>
+
+***Specification	Details***<br>
+
+Min SDK Version	API Level 24 (minSdk = 24)<br>
+Minimum Android OS	Android 7.0 (Nougat) or higher<br>
+Tested SDK Version	API Level 36 (Android 15 & 16 )<br>
+Architecture	ARM, ARM64, x86_64<br>
+Hardware Required	Wi-Fi Module & Location Permission (for Wi-Fi scanning on Android 8+)<br>
+
 ***Dowmload apk file See "Release" Section***<br> or From Diret Link
 [https://github.com/toakswap-png/WiFi-Analyzer/releases/download/WiFi_Analyzer/WiFi.Anylizer.apk]
 
