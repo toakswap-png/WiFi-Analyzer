@@ -1,0 +1,6 @@
+{
+  "name": "WiFi Analyzer",
+  "description": "Live signal strength, channel interference graph, speed & security analyzer for 2.4GHz, 5GHz, and 6GHz Wi-Fi networks.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
