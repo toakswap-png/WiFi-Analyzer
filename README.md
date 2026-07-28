@@ -21,3 +21,14 @@ Real-Time Signal History Chart: Live RSSI tracking over time to monitor signal s
 Built-In Ping Latency Tool: Measures network round-trip time (RTT) to gateway or custom hosts.<br>
 ⭐ 4. Channel Rating & Recommendation<br>
 Channel Scoring Engine: Analyzes channel congestion and ranks the best channels for optimal router configuration.<br>
+***Screenshots****
+<img width="369" height="800" alt="2 (1)" src="https://github.com/user-attachments/assets/a93fb1c7-833f-4889-9206-0e5c0dc3c827" />
+<img width="369" height="800" alt="2 (2)" src="https://github.com/user-attachments/assets/5afa578d-5420-496d-8c16-100c0f5d2811" />
+<img width="369" height="800" alt="4" src="https://github.com/user-attachments/assets/eefc5c86-5c5c-4b1e-b112-32ce50eb8e03" />
+<img width="369" height="800" alt="5" src="https://github.com/user-attachments/assets/6ce37adb-12cd-4714-8220-de87859a4dc8" />
+
+
+
+
+
+
