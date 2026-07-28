@@ -1,3 +1,11 @@
+***Features*** <br>
+
+Wi-Fi 4/5/6/7 Detection<br>
+2.4 / 5 / 6 GHz Scan <br>
+Channel Width<br>
+RSSI<br>
+Security Type<br>
+BSSID<br>
 ***Dowmload apk file See "Release" Section***<br> or From Diret Link
 [https://github.com/toakswap-png/WiFi-Analyzer/releases/download/WiFi_Analyzer/WiFi.Anylizer.apk]
 
