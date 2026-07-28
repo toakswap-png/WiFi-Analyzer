@@ -1,5 +1,5 @@
-***Dowmload apk file See "Release" Section***<br>
-
+***Dowmload apk file See "Release" Section***<br> or From Diret Link
+[https://github.com/toakswap-png/WiFi-Analyzer/releases/download/WiFi_Analyzer/WiFi.Anylizer.apk]
 
 📡 ***Wi-Fi Analyzer & Spectrum Monitor (Android)***<br>
 A modern, high-performance Android application built with Jetpack Compose and Kotlin to scan, <br>
