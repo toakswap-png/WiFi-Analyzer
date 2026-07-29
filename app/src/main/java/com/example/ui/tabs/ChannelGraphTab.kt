@@ -3,6 +3,7 @@ package com.example.ui.tabs
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -21,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -34,11 +36,17 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-enum class GraphBandSection(val displayName: String, val band: WifiBand, val channelStart: Int, val channelEnd: Int) {
-    BAND_2_4G("2.4 GHz", WifiBand.BAND_2_4GHZ, 1, 14),
-    BAND_5G_LOW("5 GHz (36-64)", WifiBand.BAND_5GHZ, 36, 64),
-    BAND_5G_HIGH("5 GHz (100-165)", WifiBand.BAND_5GHZ, 100, 165),
-    BAND_6G("6 GHz (1-93)", WifiBand.BAND_6GHZ, 1, 93)
+enum class GraphBandSection(
+    val displayName: String,
+    val shortDisplayName: String,
+    val band: WifiBand,
+    val channelStart: Int,
+    val channelEnd: Int
+) {
+    BAND_2_4G("2.4 GHz", "2.4 GHz", WifiBand.BAND_2_4GHZ, 1, 14),
+    BAND_5G_LOW("5 GHz (36-64)", "5G Low", WifiBand.BAND_5GHZ, 36, 64),
+    BAND_5G_HIGH("5 GHz (100-165)", "5G High", WifiBand.BAND_5GHZ, 100, 165),
+    BAND_6G("6 GHz (1-93)", "6 GHz", WifiBand.BAND_6GHZ, 1, 93)
 }
 
 @Composable
@@ -103,6 +111,28 @@ fun ChannelGraphTab(
         modifier = modifier
             .fillMaxSize()
             .padding(12.dp)
+            .pointerInput(selectedSection) {
+                var totalDrag = 0f
+                detectHorizontalDragGestures(
+                    onDragStart = { totalDrag = 0f },
+                    onDragEnd = {
+                        val sections = GraphBandSection.values()
+                        val currentIndex = sections.indexOf(selectedSection)
+                        if (totalDrag < -50f && currentIndex < sections.size - 1) {
+                            val nextSec = sections[currentIndex + 1]
+                            selectedSection = nextSec
+                            onSelectBand(nextSec.band)
+                        } else if (totalDrag > 50f && currentIndex > 0) {
+                            val prevSec = sections[currentIndex - 1]
+                            selectedSection = prevSec
+                            onSelectBand(prevSec.band)
+                        }
+                    },
+                    onHorizontalDrag = { _, dragAmount ->
+                        totalDrag += dragAmount
+                    }
+                )
+            }
     ) {
         // Top Header Row: Section Tabs & Auto-Fit Switch
         Row(
@@ -112,33 +142,45 @@ fun ChannelGraphTab(
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                modifier = Modifier.weight(1f)
+            Surface(
+                color = Color(0xFF0F172A),
+                shape = RoundedCornerShape(12.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF334155)),
+                modifier = Modifier
+                    .weight(1f)
+                    .height(38.dp)
             ) {
-                GraphBandSection.values().forEach { sec ->
-                    Surface(
-                        color = if (selectedSection == sec) PrimaryCyan else DarkNavyCard,
-                        shape = RoundedCornerShape(20.dp),
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(20.dp))
-                            .clickable {
-                                selectedSection = sec
-                                onSelectBand(sec.band)
-                            }
-                            .testTag("graph_section_${sec.name}")
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.padding(vertical = 8.dp)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(3.dp)
+                ) {
+                    GraphBandSection.values().forEach { sec ->
+                        val isSelected = selectedSection == sec
+                        Surface(
+                            color = if (isSelected) Color(0xFF0284C7) else Color.Transparent,
+                            shape = RoundedCornerShape(9.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .clip(RoundedCornerShape(9.dp))
+                                .clickable {
+                                    selectedSection = sec
+                                    onSelectBand(sec.band)
+                                }
+                                .testTag("graph_section_${sec.name}")
                         ) {
-                            Text(
-                                text = sec.displayName,
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (selectedSection == sec) Color.White else TextSecondaryDark
-                            )
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                Text(
+                                    text = sec.shortDisplayName,
+                                    fontSize = 11.sp,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (isSelected) Color.White else Color(0xFF94A3B8),
+                                    maxLines = 1
+                                )
+                            }
                         }
                     }
                 }
@@ -148,31 +190,32 @@ fun ChannelGraphTab(
 
             // Auto-Fit Toggle Chip
             Surface(
-                color = if (isAutoFitEnabled) NeonCyan.copy(alpha = 0.2f) else DarkNavyCard,
-                shape = RoundedCornerShape(16.dp),
+                color = if (isAutoFitEnabled) NeonCyan.copy(alpha = 0.2f) else Color(0xFF0F172A),
+                shape = RoundedCornerShape(12.dp),
                 border = androidx.compose.foundation.BorderStroke(
                     1.dp,
-                    if (isAutoFitEnabled) NeonCyan else GlassBorder
+                    if (isAutoFitEnabled) NeonCyan else Color(0xFF334155)
                 ),
                 modifier = Modifier
-                    .clip(RoundedCornerShape(16.dp))
+                    .height(38.dp)
+                    .clip(RoundedCornerShape(12.dp))
                     .clickable { isAutoFitEnabled = !isAutoFitEnabled }
                     .testTag("autofit_toggle_chip")
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
+                    modifier = Modifier.padding(horizontal = 10.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Refresh,
                         contentDescription = "Auto-Fit",
                         tint = if (isAutoFitEnabled) NeonCyan else TextMutedDark,
-                        modifier = Modifier.size(12.dp)
+                        modifier = Modifier.size(14.dp)
                     )
                     Text(
                         text = if (isAutoFitEnabled) "Auto-Fit" else "Full",
-                        fontSize = 10.sp,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
                         color = if (isAutoFitEnabled) NeonCyan else TextMutedDark
                     )

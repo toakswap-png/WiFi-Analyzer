@@ -3,6 +3,7 @@ package com.example.ui.tabs
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,38 +45,69 @@ fun ChannelRatingTab(
         modifier = modifier
             .fillMaxSize()
             .padding(12.dp)
+            .pointerInput(selectedBand) {
+                var totalDrag = 0f
+                detectHorizontalDragGestures(
+                    onDragStart = { totalDrag = 0f },
+                    onDragEnd = {
+                        val bands = WifiBand.values()
+                        val currentIndex = bands.indexOf(selectedBand)
+                        if (totalDrag < -50f && currentIndex < bands.size - 1) {
+                            onSelectBand(bands[currentIndex + 1])
+                        } else if (totalDrag > 50f && currentIndex > 0) {
+                            onSelectBand(bands[currentIndex - 1])
+                        }
+                    },
+                    onHorizontalDrag = { _, dragAmount ->
+                        totalDrag += dragAmount
+                    }
+                )
+            }
     ) {
         // Band Filter Selector
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        Surface(
+            color = Color(0xFF0F172A),
+            shape = RoundedCornerShape(12.dp),
+            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF334155)),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 8.dp)
+                .height(38.dp)
+                .padding(bottom = 0.dp)
         ) {
-            WifiBand.values().forEach { band ->
-                Surface(
-                    color = if (selectedBand == band) PrimaryCyan else DarkNavyCard,
-                    shape = RoundedCornerShape(20.dp),
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(20.dp))
-                        .clickable { onSelectBand(band) }
-                        .testTag("rating_band_${band.shortName}")
-                ) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.padding(vertical = 8.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(3.dp)
+            ) {
+                WifiBand.values().forEach { band ->
+                    val isSelected = selectedBand == band
+                    Surface(
+                        color = if (isSelected) Color(0xFF0284C7) else Color.Transparent,
+                        shape = RoundedCornerShape(9.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(9.dp))
+                            .clickable { onSelectBand(band) }
+                            .testTag("rating_band_${band.shortName}")
                     ) {
-                        Text(
-                            text = band.displayName,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (selectedBand == band) Color.White else TextSecondaryDark
-                        )
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text(
+                                text = band.displayName,
+                                fontSize = 12.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                color = if (isSelected) Color.White else Color(0xFF94A3B8),
+                                maxLines = 1
+                            )
+                        }
                     }
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(10.dp))
 
         // Router Channel Recommendation Banner Card
         Card(

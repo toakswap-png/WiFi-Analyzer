@@ -7,8 +7,10 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +26,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -50,47 +53,93 @@ fun AccessPointsTab(
 ) {
     var detailNetwork by remember { mutableStateOf<WifiNetwork?>(null) }
     val context = LocalContext.current
+    val bandList: List<WifiBand?> = remember { listOf(null) + WifiBand.values().toList() }
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 12.dp, vertical = 8.dp)
+            .pointerInput(selectedBand) {
+                var totalDrag = 0f
+                detectHorizontalDragGestures(
+                    onDragStart = { totalDrag = 0f },
+                    onDragEnd = {
+                        val currentIndex = bandList.indexOf(selectedBand)
+                        if (totalDrag < -50f && currentIndex < bandList.size - 1 && currentIndex != -1) {
+                            onSelectBand(bandList[currentIndex + 1])
+                        } else if (totalDrag > 50f && currentIndex > 0) {
+                            onSelectBand(bandList[currentIndex - 1])
+                        }
+                    },
+                    onHorizontalDrag = { _, dragAmount ->
+                        totalDrag += dragAmount
+                    }
+                )
+            }
     ) {
         // Band Filter Chips
-        Row(
+        LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            FilterChip(
-                selected = selectedBand == null,
-                onClick = { onSelectBand(null) },
-                label = { Text("All Bands (${networks.size})", fontSize = 11.sp) },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = PrimaryCyan,
-                    selectedLabelColor = Color.White,
-                    containerColor = DarkNavyCard,
-                    labelColor = TextSecondaryDark
-                ),
-                shape = RoundedCornerShape(20.dp),
-                modifier = Modifier.testTag("filter_all")
-            )
-
-            WifiBand.values().forEach { band ->
-                val count = networks.count { it.band == band }
-                FilterChip(
-                    selected = selectedBand == band,
-                    onClick = { onSelectBand(band) },
-                    label = { Text("${band.displayName} ($count)", fontSize = 11.sp) },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = PrimaryCyan,
-                        selectedLabelColor = Color.White,
-                        containerColor = DarkNavyCard,
-                        labelColor = TextSecondaryDark
+            item {
+                val isAllSelected = selectedBand == null
+                Surface(
+                    color = if (isAllSelected) Color(0xFF0284C7) else Color(0xFF0F172A),
+                    shape = RoundedCornerShape(12.dp),
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.dp,
+                        if (isAllSelected) Color(0xFF0284C7) else Color(0xFF334155)
                     ),
-                    shape = RoundedCornerShape(20.dp),
-                    modifier = Modifier.testTag("filter_${band.shortName}")
-                )
+                    modifier = Modifier
+                        .height(36.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable { onSelectBand(null) }
+                        .testTag("filter_all")
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.padding(horizontal = 14.dp)
+                    ) {
+                        Text(
+                            text = "All Bands (${networks.size})",
+                            fontSize = 12.sp,
+                            fontWeight = if (isAllSelected) FontWeight.Bold else FontWeight.Medium,
+                            color = if (isAllSelected) Color.White else Color(0xFFCBD5E1)
+                        )
+                    }
+                }
+            }
+
+            items(WifiBand.values()) { band ->
+                val isBandSelected = selectedBand == band
+                val count = networks.count { it.band == band }
+                Surface(
+                    color = if (isBandSelected) Color(0xFF0284C7) else Color(0xFF0F172A),
+                    shape = RoundedCornerShape(12.dp),
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.dp,
+                        if (isBandSelected) Color(0xFF0284C7) else Color(0xFF334155)
+                    ),
+                    modifier = Modifier
+                        .height(36.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable { onSelectBand(band) }
+                        .testTag("filter_${band.shortName}")
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.padding(horizontal = 14.dp)
+                    ) {
+                        Text(
+                            text = "${band.displayName} ($count)",
+                            fontSize = 12.sp,
+                            fontWeight = if (isBandSelected) FontWeight.Bold else FontWeight.Medium,
+                            color = if (isBandSelected) Color.White else Color(0xFFCBD5E1)
+                        )
+                    }
+                }
             }
         }
 
