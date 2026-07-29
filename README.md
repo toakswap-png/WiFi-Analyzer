@@ -36,3 +36,15 @@ Corrected Subnet Mask calculation and Gateway Router IP lookup logic.<br>
 Enhanced Wi-Fi Standard identification (Wi-Fi 4 / 5 / 6 / 6E / 7).<br>
 Selectable text containers for copying IP addresses and DNS values.<br>
 Edge-to-Edge Material 3 UI: Full Material Design 3 dark theme implementation using Jetpack Compose.<br>
+
+<img width="369" height="800" alt="2 (1)" src="https://github.com/user-attachments/assets/71dd9327-4e3e-4ec8-8c58-2973c61b9ba5" />
+<img width="369" height="800" alt="2 (2)" src="https://github.com/user-attachments/assets/6d6b215f-7c71-4b4a-9a4f-560d4f69e9de" />
+<img width="369" height="800" alt="2 (2)" src="https://github.com/user-attachments/assets/1e37a311-4c96-4c25-84fd-ade56488e65d" />
+<img width="369" height="800" alt="4" src="https://github.com/user-attachments/assets/66b4772b-f668-459c-9e76-c05d1ec31908" />
+<img width="369" height="800" alt="5" src="https://github.com/user-attachments/assets/c0d699d0-d475-445d-8e3f-60fc695badd2" />
+
+
+
+
+
+
